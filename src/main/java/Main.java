@@ -29,8 +29,8 @@ public class Main {
         boolean player1Turn = true;
         boolean[][] winCells = new boolean[3][3];
 
-        System.out.println("\n\n\nWelcome to 'my_three_in_a_row' by eg_");
-        System.out.println("The player who get the first three stones in a row wins the game...");
+        say("\n\n\nWelcome to 'my_three_in_a_row' by eg_");
+        say("The player who get the first three stones in a row wins the game...");
         String player1 = getName(stone1, "Enter your name Player 1 (empty = X):", "");
         String player2 = getName(stone2, "Enter your name Player 2 (empty = O):", player1);
 
@@ -64,15 +64,15 @@ public class Main {
                     currentStone = stone2;
                 }
 
-                System.out.println(CURRENT_PLAYER + " it is your turn! \nChoose your field \nInput numbers from 1 to 9: \n");
+                say(CURRENT_PLAYER + " it is your turn! \nChoose your field \nInput numbers from 1 to 9: \n");
 
                 while (!validMove) {
 
                     String playerInput = scan();
 
                     if (playerInput.length() != 1 || !whiteList.contains(playerInput)) {
-                        System.out.println("Invalid input!");
-                        System.out.println("Try again!");
+                        say("Invalid input!");
+                        say("Try again!");
                         System.out.println();
                         continue;
                     }
@@ -89,8 +89,8 @@ public class Main {
                     }
 
                     if (!validMove) {
-                        System.out.println("There is already a stone in this field!");
-                        System.out.println("Try again!");
+                        say("There is already a stone in this field!");
+                        say("Try again!");
                         System.out.println();
                     }
                 }
@@ -107,62 +107,88 @@ public class Main {
                                 || (board[0][1].equals(currentStone) && board[1][1].equals(currentStone) && board[2][1].equals(currentStone))
                                 || (board[0][2].equals(currentStone) && board[1][2].equals(currentStone) && board[2][2].equals(currentStone))
                 ) {
-                    System.out.println(CURRENT_PLAYER + " won!");
+                    say(CURRENT_PLAYER + " won!");
                     playedGames++;
                     gameOver = true;
                 }
 
                 if (moveCount == 10 && !gameOver) {
-                    System.out.println("It's a draw!");
+                    say("It's a draw!");
                     playedGames++;
                     draw = true;
                     gameOver = true;
                 }
             }
 
-            System.out.println("Saving leaderboard...");
+            say("Saving leaderboard...");
             saveLeaderboard(draw);
 
-            System.out.println("\nrevenge? (y/n)");
+            say("\nrevenge? (y/n)");
             boolean validAnswer = false;
             while (!validAnswer) {
                 String playerAnswer = scan();
                 if (playerAnswer.equalsIgnoreCase("y")) {
-                    System.out.println("REVENGE!!! \nPreparing for new game...");
+                    say("REVENGE!!! \nPreparing for new game...");
                     validAnswer = true;
                     player1Turn = false;
                 } else if (playerAnswer.equalsIgnoreCase("n")) {
-                    System.out.println("EXIT");
+                    say("EXIT");
                     validAnswer = true;
                     revenge = false;
                     showLeaderboard();
                 } else {
-                    System.out.println("Invalid input!");
-                    System.out.println("Try again!");
+                    say("Invalid input!");
+                    say("Try again!");
                 }
             }
 
         }
     }
 
+    private static void say(String text) {
+        for (String line : text.split("\n", -1)) {
+            if (line.isEmpty()) {
+                System.out.println();
+            } else {
+                System.out.println(FontColor.BG_WHITE + FontColor.BLACK_BOLD + line + FontColor.RESET);
+            }
+        }
+    }
+
+    private static void ask(String text) {
+        System.out.print(FontColor.BG_WHITE + FontColor.BLACK_BOLD + text + " ");
+    }
+
     private static void printBoard(String[][] board) {
         for (int i = 0; i < board.length; i++) {
             System.out.print(FontColor.BG_WHITE + FontColor.BLACK_BOLD + "|");
             for (int j = 0; j < board[i].length; j++) {
-                System.out.print(" " + board[i][j] + " ");
-                System.out.print("|");
+                System.out.print(" " + cellColor(board[i][j]) + " " + FontColor.BLACK_BOLD + "|");
             }
             System.out.println(FontColor.RESET);
         }
     }
 
+    private static String cellColor(String cell) {
+        if (cell.equals("X")) {
+            return FontColor.RED_BOLD + cell;
+        }
+        if (cell.equals("O")) {
+            return FontColor.BLUE_BOLD + cell;
+        }
+        return cell;
+    }
+
     private static String scan() {
-        return SCANNER.nextLine().trim();
+        System.out.print(FontColor.BG_WHITE + FontColor.BLACK_BOLD);
+        String input = SCANNER.nextLine().trim();
+        System.out.print(FontColor.RESET);
+        return input;
     }
 
     private static String getName(String stone, String text, String player1) {
         while (true) {
-            System.out.print(text);
+            ask(text);
             String playerInput = scan();
             if (playerInput.isEmpty()) {
                 return stone;
@@ -170,9 +196,9 @@ public class Main {
             if (isValidName(playerInput) && !player1.equals(playerInput)) {
                 return playerInput;
             }
-            System.out.println("Invalid name or name already exists!");
-            System.out.println("Only letters and digits, starting with a letter.");
-            System.out.println("Try again!");
+            say("Invalid name or name already exists!");
+            say("Only letters and digits, starting with a letter.");
+            say("Try again!");
         }
     }
 
@@ -186,7 +212,7 @@ public class Main {
         } catch (NoSuchFileException _) {
 
         } catch (IOException e) {
-            System.out.println("Error reading leaderboard!");
+            say("Error reading leaderboard!");
         }
     }
 
@@ -215,7 +241,7 @@ public class Main {
         try (Writer writer = Files.newBufferedWriter(Path.of(LEADERBOARD_PATH))) {
             PROPS.store(writer, "Leaderboard");
         } catch (IOException e) {
-            System.out.println("Error writing leaderboard!");
+            say("Error writing leaderboard!");
         }
     }
 
